@@ -21,11 +21,14 @@
 	atheos.terminal = {
 
 		path: atheos.path + 'plugins/Terminal/',
+		activeDir: null,
 		terminal: null,
 
 		command: null,
 		screen: null,
+		prompt: null,
 		output: null,
+
 
 		// Command History
 		command_history: [],
@@ -35,35 +38,36 @@
 		init: function() {
 			self = this;
 			self.terminal = self.path + 'terminal.php';
+			oX('#terminal', true).on('mousedown, mouseup', self.checkFocus);
+			oX('#command input', true).on('change, keydown, paste, input', self.listener);
 		},
 
 		open: function() {
+			self.activeDir = self.activeDir || atheos.project.current.path;
 			var callback = function() {
 				self.command = oX('#command input');
 				self.screen = oX('#terminal');
-				self.screen.on('mousedown, mouseup', self.checkFocus);
-				self.output = oX('#terminal>#output');
-
+				self.output = oX('#terminal #output');
+				self.prompt = oX('#prompt');
 				self.command.focus();
-				self.command.on('change, keydown, paste, input', self.listener);
 			};
 
 			// atheos.modal.load(800, this.path + 'dialog.php');
 			atheos.modal.load(800, atheos.dialog, {
 				target: 'Terminal',
 				action: 'open',
-				path: this.path,
+				path: self.activeDir,
 				callback
 			});
 			atheos.common.hideOverlay();
 		},
-		
+
 		mouseDown: false,
 		checkFocus: function(e) {
-			if(e.type === 'mousedown') {
+			if (e.type === 'mousedown') {
 				self.mouseDown = true;
 				setTimeout(function() {
-					if(!self.mouseDown) {
+					if (!self.mouseDown) {
 						self.command.focus();
 					}
 				}, 200);
@@ -91,13 +95,13 @@
 					// Up arrow, reverse history
 				case 38:
 					if (self.history_counter >= 0) {
-						self.command(self.command_history[self.history_counter--]);
+						self.command.value(self.command_history[self.history_counter--]);
 					}
 					break;
 					// Down arrow, forward history
 				case 40:
 					if (self.history_counter <= self.command_counter) {
-						self.command(self.command_history[++self.history_counter]);
+						self.command.value(self.command_history[++self.history_counter]);
 					}
 					break;
 			}
@@ -110,14 +114,17 @@
 				data: {
 					command: command
 				},
-				success: function(data) {
+				success: function(reply) {
 					self.command.value('');
 					self.command.focus();
+
+					let data = reply.data;
+
 					switch (data) {
 						case '[CLEAR]':
 							self.clear();
 							break;
-						case '[CLOSED]':
+						case '[EXIT]':
 							self.clear();
 							self.execute();
 							window.parent.codiad.modal.unload();
@@ -131,27 +138,30 @@
 						case 'Enter Password:':
 							self.clear();
 							self.display('Authentication Required', data);
-							self.command.css({
-								'color': '#333'
-							});
+							// self.command.css({
+							// 	'color': '#333'
+							// });
 							break;
 						default:
 							self.display(command, data);
 					}
+
+					self.prompt.html(reply.prompt);
+
+
 				}
 			});
 		},
 
 		display: function(command, data) {
-			self.output.append('<pre class="command">' + command + '</pre><pre class="data">' + data + '</pre>');
-			// self.screen.scrollTop(self.output.height());
+			self.output.append('<div class="command">' + self.prompt.html() + command + '</div><pre class="data">' + data + '</pre>');
+			var element = oX('#terminal .container').el;
+			element.scrollTop = element.scrollHeight - element.clientHeight;
 		},
-
-
 
 		clear: function() {
 			self.output.html('');
-			self.command.val('');
+			self.command.value('');
 		}
 
 	};

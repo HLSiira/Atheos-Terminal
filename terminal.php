@@ -8,38 +8,25 @@
     *  for use, modification and redistribution
     */
 
-//////////////////////////////////////////////////////////////////
-// Password
-//////////////////////////////////////////////////////////////////
-
-define('PASSWORD', 'terminal');
-
-//////////////////////////////////////////////////////////////////
-// Core Stuff
-//////////////////////////////////////////////////////////////////
-
 require_once('../../common.php');
 
 //////////////////////////////////////////////////////////////////
 // Verify Session or Key
 //////////////////////////////////////////////////////////////////
-
 Common::checkSession();
 
 //////////////////////////////////////////////////////////////////
 // Globals
 //////////////////////////////////////////////////////////////////
+$project = Common::data("project", "session");
 
-// define('ROOT', WORKSPACE . '/' . $_SESSION['project']);
-define('ROOT', $_SESSION['project'][0] == '/' ? $_SESSION['project'] : WORKSPACE.'/'.$_SESSION['project']);
-
-// define(' ', 'ssh,telnet');
+define('PASSWORD', 'terminal');
+define('ROOT', Common::getWorkspacePath($project));
 define('BLOCKED', 'ssh,telnet');
 
 //////////////////////////////////////////////////////////////////
 // Terminal Class
 //////////////////////////////////////////////////////////////////
-
 class Terminal {
 
 	////////////////////////////////////////////////////
@@ -49,8 +36,6 @@ class Terminal {
 	public $command = '';
 	public $output = '';
 	public $directory = '';
-
-	// Holder for commands fired by system
 	public $command_exec = '';
 
 	////////////////////////////////////////////////////
@@ -58,162 +43,111 @@ class Terminal {
 	////////////////////////////////////////////////////
 
 	public function __construct() {
-		if (!isset($_SESSION['dir']) || !isset($_SESSION['dir'][$_SESSION['project']]) || empty($_SESSION['dir'][$_SESSION['project']])) {
-			if (ROOT == '') {
-				$this->command_exec = 'pwd';
-				$this->Execute();
-				$_SESSION['dir'][$_SESSION['project']] = $this->output;
+		if (!isset($_SESSION['activeDir']) || !isset($_SESSION['activeDir'][$_SESSION['project']]) || empty($_SESSION['activeDir'][$_SESSION['project']])) {
+			if (ROOT === '') {
+				$output = Common::execute('pwd');
+				$_SESSION['activeDir'] = array([$_SESSION['project']] => $output);
 			} else {
-				$this->directory = ROOT;
-				$this->ChangeDirectory();
+				$this->changeDir(ROOT);
 			}
 		} else {
-			$this->directory = $_SESSION['dir'][$_SESSION['project']];
-			$this->ChangeDirectory();
+			$this->changeDir($_SESSION['activeDir'][$_SESSION['project']]);
 		}
 	}
 
 	////////////////////////////////////////////////////
 	// Primary call
 	////////////////////////////////////////////////////
-
-	public function Process() {
-		$this->ParseCommand();
-		$this->Execute();
-		return $this->output;
+	public function process($str) {
+		debug($str);
+		$cmd = $this->parseCommand($str);
+		debug($cmd);
+		$output = Common::execute($cmd);
+		debug($output);
+		return $output;
 	}
 
 	////////////////////////////////////////////////////
 	// Parse command for special functions, blocks
 	////////////////////////////////////////////////////
-
-	public function ParseCommand() {
+	public function parseCommand($str) {
 
 		// Explode command
-		$command_parts = explode(" ", $this->command);
+		$command_parts = explode(" ", $str);
 
 		// Handle 'cd' command
 		if (in_array('cd', $command_parts)) {
 			$cd_key = array_search('cd', $command_parts);
 			$cd_key++;
-			$this->directory = $command_parts[$cd_key];
-			$this->ChangeDirectory();
+			
+			$dir = $command_parts[$cd_key];
+			
+			$this->changeDir($dir);
 			// Remove from command
-			$this->command = str_replace('cd '.$this->directory, '', $this->command);
+			$str = str_replace("cd $dir", "", $str);
 		}
 
 		// Replace text editors with cat
 		$editors = array('vim', 'vi', 'nano');
-		// $this->command = str_replace($editors, 'cat', $this->command);
-		$this->command = preg_replace('/^('.join('|', $editors).')/', 'cat', trim($this->command));
-
+		$str = preg_replace('/^('.join('|', $editors).')/', 'cat', trim($str));
 
 		// Handle blocked commands
 		$blocked = explode(',', BLOCKED);
 		if (in_array($command_parts[0], $blocked)) {
-			$this->command = 'echo ERROR: Command not allowed';
+			$str = 'echo ERROR: Command not allowed';
 		}
 
 		// Update exec command
-		$this->command_exec = $this->command . ' 2>&1';
+		return $str . " 2>&1";
 	}
 
 	////////////////////////////////////////////////////
 	// Chnage Directory
 	////////////////////////////////////////////////////
-
-	public function ChangeDirectory() {
-		chdir($this->directory);
+	public function changeDir($dir) {
+		chdir($dir);
 		// Store new directory
-		$_SESSION['dir'][$_SESSION['project']] = exec('pwd');
+		$_SESSION['activeDir'][$_SESSION['project']] = exec('pwd');
 	}
-
-	////////////////////////////////////////////////////
-	// Execute commands
-	////////////////////////////////////////////////////
-
-	public function Execute() {
-		//system
-		if (function_exists('system')) {
-			ob_start();
-			system($this->command_exec);
-			$this->output = ob_get_contents();
-			ob_end_clean();
-		}
-		//passthru
-		else if (function_exists('passthru')) {
-			ob_start();
-			passthru($this->command_exec);
-			$this->output = ob_get_contents();
-			ob_end_clean();
-		}
-		//exec
-		else if (function_exists('exec')) {
-			exec($this->command_exec, $this->output);
-			$this->output = implode("\n", $output);
-		}
-		//shell_exec
-		else if (function_exists('shell_exec')) {
-			$this->output = shell_exec($this->command_exec);
-		}
-		// no support
-		else {
-			$this->output = 'Command execution not possible on this system';
-		}
-	}
-
 }
 
 //////////////////////////////////////////////////////////////////
 // Processing
 //////////////////////////////////////////////////////////////////
 
-$command = '';
-if (!empty($_POST['command'])) {
-	$command = $_POST['command'];
-}
+$user = Common::data("user", "session");
+$command = Common::data('command');
 
-if (strtolower($command == 'exit')) {
+if (strtolower($command === 'exit')) {
+	$_SESSION['term_auth'] = false;
+	$output = '[EXIT]';
 
-	//////////////////////////////////////////////////////////////
-	// Exit
-	//////////////////////////////////////////////////////////////
-
-	$_SESSION['term_auth'] = 'false';
-	$output = '[CLOSED]';
-
-} else if (! isset($_SESSION['term_auth']) || $_SESSION['term_auth'] != 'true') {
-
-	//////////////////////////////////////////////////////////////
-	// Authentication
-	//////////////////////////////////////////////////////////////
-
-	if ($command == PASSWORD) {
-		$_SESSION['term_auth'] = 'true';
+} else if (!isset($_SESSION['term_auth']) || $_SESSION['term_auth'] !== true) {
+	if ($command === PASSWORD) {
+		$_SESSION['term_auth'] = true;
 		$output = '[AUTHENTICATED]';
 	} else {
 		$output = 'Enter Password:';
 	}
 
 } else {
-
-	//////////////////////////////////////////////////////////////
-	// Execution
-	//////////////////////////////////////////////////////////////
-
-	// Split &&
 	$Terminal = new Terminal();
 	$output = '';
 	$command = explode("&&", $command);
 	foreach ($command as $c) {
-		$Terminal->command = $c;
-		$output .= $Terminal->Process();
+		$output .= $Terminal->process($c);
 	}
-
 }
 
+$output = array(
+	"data" => htmlentities($output),
+	"dir" => htmlentities(exec('pwd')),
+	"prompt" => "<span class=\"user\">$user</span>:<span class=\"path\">" . exec('pwd') . "</span>$ "
+);
 
-echo(htmlentities($output));
+debug($output);
+
+Common::sendJSON("success", $output);
 
 
 
