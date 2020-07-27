@@ -1,28 +1,43 @@
 <?php
+//////////////////////////////////////////////////////////////////////////////80
+// Atheos Terminal
+//////////////////////////////////////////////////////////////////////////////80
+// Copyright (c) 2020 Liam Siira (liam@siira.io), distributed as-is and without
+// warranty under the MIT License. See [root]/license.md for more.
+// This information must remain intact.
+//////////////////////////////////////////////////////////////////////////////80
+// Copyright (c) 2013 Codiad & Kent Safranski
+// Source: https://github.com/Fluidbyte/Codiad-Terminal
+//////////////////////////////////////////////////////////////////////////////80
 
-    /*
-    *  Copyright (c) Codiad & Kent Safranski (codiad.com), distributed
-    *  as-is and without warranty under the MIT License. See 
-    *  [root]/license.txt for more. This information must remain intact.
-    */
+$path = Common::data("path");
+$user = Common::data("user", "session");
 
+switch ($action) {
 
-    require_once('../../common.php');
-    
-    //////////////////////////////////////////////////////////////////
-    // Verify Session or Key
-    //////////////////////////////////////////////////////////////////
-    
-    checkSession();
-    
-?>
-<style>#terminal { border: 1px solid #2b2b2b; }</style>
-<iframe id="terminal" width="100%" height="400"></iframe>
-<button onclick="codiad.modal.unload(); return false;">Close Terminal</button>
-<script>
-    $(function(){ 
-        var wheight = $(window).outerHeight() * 0.5;
-        $('#terminal').css('height',wheight+'px');
-        $('#terminal').attr('src', codiad.terminal.path + "emulator/index.php?id=kd9kdi8nundj");
-    });
-</script>
+	//////////////////////////////////////////////////////////////////////////80
+	// Probe File Contents
+	//////////////////////////////////////////////////////////////////////////80
+	case 'open': ?>
+		<label class="title"><i class="fas fa-terminal"></i>Terminal</label>
+		<div id="terminal">
+
+			<div id="output"></div>
+
+			<div id="command">
+				<div id="prompt">
+					<?php echo($user) ?>&gt;
+				</div>
+				<input id="terminal_input" type="text">
+			</div>
+		</div>
+		<?php
+		break;
+
+	//////////////////////////////////////////////////////////////////////////80
+	// Default: Invalid Action
+	//////////////////////////////////////////////////////////////////////////80
+	default:
+		Common::sendJSON("E401i");
+		break;
+}

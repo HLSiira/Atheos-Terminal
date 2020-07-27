@@ -1,10 +1,14 @@
-[ { "author" : "Fluidbyte",
-    "version" : "1.0",
-    "name" : "Terminal",
-    "url" : "https://github.com/Fluidbyte/Codiad-Terminal.git",
-    "rightbar" : [{
-        "action" : "codiad.terminal.open();",
-        "icon" : "icon-monitor",
-        "title" : "Terminal"
-        }]
-  } ]
+{
+	"author": ["HLSiira", "Fluidbyte"],
+	"name": "Terminal",
+	"description": "Provides terminal emulation and interaction with server",
+	"category": "Development",
+	"status": "available",
+	"url": "https://github.com/HLSiira/Atheos-Terminal",
+	"version": "1.0.0",
+	"rightbar": [{
+		"action": "atheos.terminal.open();",
+		"icon": "fas fa-terminal",
+		"title": "Terminal"
+	}]
+}
