@@ -13,7 +13,7 @@
 	width: 100%;
 	font-family: 'Ubuntu-Fira', monospace;
 	background-color: #1C1C1E;
-	background-image: radial-gradient(#46A60927, black 200%);
+	background-image: radial-gradient(#0074D927, black 200%);
 	text-shadow: 0 0 2px #585858;
 	line-height: 1.3em;
 	overflow: hidden;
@@ -39,7 +39,7 @@
 	position: absolute;
 	bottom: 100%;
 	pointer-events: none;
-	animation: scanline 10s linear infinite;
+	animation: scanline 8s linear infinite;
 }
 
 #terminal .container {
