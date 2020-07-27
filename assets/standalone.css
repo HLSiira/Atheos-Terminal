@@ -1,0 +1,23 @@
+/* DOCUMENT */
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+}
+
+body {
+	width: 100%;
+	height: 100%;
+	color: #F5F9F9;
+    background-color: #151516;
+    font: normal 14px 'Ubuntu', sans-serif;
+}
+
+#terminal {
+	height: 100%;
+}
+
+#terminal .container {
+	height: 100% !important;
+}

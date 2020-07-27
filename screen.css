@@ -1,11 +1,13 @@
-/*
-*  PHP+JQuery Temrinal Emulator by Fluidbyte <http://www.fluidbyte.net>
-*
-*  This software is released as-is with no warranty and is complete free
-*  for use, modification and redistribution
-*/
-/* TERMINAL */
-
+/*////////////////////////////////////////////////////////////////////////////80
+// Atheos Terminal
+//////////////////////////////////////////////////////////////////////////////80
+// Copyright (c) 2020 Liam Siira (liam@siira.io), distributed as-is and without
+// warranty under the MIT License. See [root]/license.md for more.
+// This information must remain intact.
+//////////////////////////////////////////////////////////////////////////////80
+// Copyright (c) 2013 Codiad & Kent Safranski
+// Source: https://github.com/Fluidbyte/Codiad-Terminal
+//////////////////////////////////////////////////////////////////////////////*/
 #terminal {
 	position: relative;
 	width: 100%;
@@ -14,9 +16,8 @@
 	background-image: radial-gradient(#46A60927, black 200%);
 	text-shadow: 0 0 2px #585858;
 	line-height: 1.3em;
+	overflow: hidden;
 }
-
-
 
 #terminal::after {
 	content: "";
@@ -27,6 +28,18 @@
 	height: 100%;
 	background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px);
 	pointer-events: none;
+}
+
+#terminal .scanline {
+	width: 100%;
+	height: 100px;
+	z-index: 8;
+	background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.2) 10%, rgba(0, 0, 0, 0.1) 100%);
+	opacity: 0.1;
+	position: absolute;
+	bottom: 100%;
+	pointer-events: none;
+	animation: scanline 10s linear infinite;
 }
 
 #terminal .container {
@@ -70,18 +83,45 @@
 #prompt {
 	display: inline-block;
 	font-weight: bold;
+	white-space: pre;
 }
 
-#command input {
-	display: inline-block;
-	border: none;
-	padding: 0;
-	margin: 0;
-	padding-left: 5px;
+#terminal_input {
+    position: relative;
+    caret-color: transparent;
 	font-weight: bold;
-	background-color: unset;
+}
+/* Puts a blinking square after the content as replacement for caret */
+#terminal_input:after {
+    content: "■";
+    animation: cursor 1s infinite;
+    animation-timing-function: step-end;
+    margin-left: 2px;
 }
 
-#command input:focus {
-	outline: none;
+@keyframes scanline {
+	0% {
+		bottom: 100%;
+	}
+	80% {
+		bottom: 100%;
+	}
+	100% {
+		bottom: -20%;
+	}
+}
+
+@keyframes cursor {
+	0% {
+		opacity: 1;
+	}
+	25% {
+		opacity: 0;
+	}
+	75% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 1;
+	}
 }

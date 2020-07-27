@@ -21,13 +21,12 @@ switch ($action) {
 	case 'open': ?>
 		<label class="title"><i class="fas fa-terminal"></i>Terminal</label>
 		<div id="terminal">
+			<div class="scanline"></div>
 			<div class="container">
 				<div id="output"></div>
 				<div id="command">
-					<div id="prompt">
-						<?php echo("<span class=\"user\">$user</span>:<span class=\"path\">$path</span>$")  ?>
-					</div>
-					<input id="terminal_input" type="text">
+					<span id="prompt"><?php echo("<span class=\"user\">$user</span>:<span class=\"path\">$path</span>$")  ?></span>
+					<span id="terminal_input" contenteditable="true"></span>
 				</div>
 			</div>
 		</div>

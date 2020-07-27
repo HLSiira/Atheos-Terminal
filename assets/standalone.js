@@ -11,16 +11,11 @@
 
 (function(global) {
 
-	var atheos = global.atheos,
-		amplify = global.amplify;
-
-	amplify.subscribe('system.loadExtra', () => atheos.terminal.init());
-
 	var self = null;
 
-	atheos.terminal = {
+	var terminal = {
 
-		path: atheos.path + 'plugins/Terminal/',
+		path: window.location.href.replace('emulator.php', ''),
 		activeDir: null,
 		terminal: null,
 
@@ -41,27 +36,13 @@
 			oX('#terminal', true).on('mousedown, mouseup', self.checkFocus);
 			// oX('#command input', true).on('change, keydown, paste, input', self.listener);
 			oX('#terminal_input', true).on('change, keydown, paste, input', self.listener);
-		},
-
-		open: function() {
-			self.activeDir = self.activeDir || atheos.project.current.path;
-			var callback = function() {
-				// self.command = oX('#command input');
-				self.command = oX('#terminal_input');
+			
+							self.command = oX('#terminal_input');
 				self.screen = oX('#terminal');
 				self.output = oX('#terminal #output');
 				self.prompt = oX('#prompt');
 				self.command.focus();
-			};
-
-			// atheos.modal.load(800, this.path + 'dialog.php');
-			atheos.modal.load(800, atheos.dialog, {
-				target: 'Terminal',
-				action: 'open',
-				path: self.activeDir,
-				callback
-			});
-			atheos.common.hideOverlay();
+			
 		},
 
 		mouseDown: false,
@@ -164,4 +145,10 @@
 		}
 
 	};
+
+
+	document.addEventListener('DOMContentLoaded', function() {
+		terminal.init();
+	});
+
 })(this);
