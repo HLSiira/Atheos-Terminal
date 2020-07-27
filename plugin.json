@@ -7,7 +7,7 @@
 	"url": "https://github.com/HLSiira/Atheos-Terminal",
 	"version": "1.0.0",
 	"rightbar": [{
-		"action": "atheos.terminal.open();",
+		"action": "atheos.Terminal.open();",
 		"icon": "fas fa-terminal",
 		"title": "Terminal"
 	}]

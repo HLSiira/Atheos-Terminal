@@ -13,11 +13,11 @@
 
 	var self = null;
 
-	var terminal = {
+	var Terminal = {
 
 		path: window.location.href.replace('emulator.php', ''),
 		activeDir: null,
-		terminal: null,
+		controller: null,
 
 		command: null,
 		screen: null,
@@ -32,7 +32,7 @@
 
 		init: function() {
 			self = this;
-			self.terminal = self.path + 'terminal.php';
+			self.controller = self.path + 'terminal.php';
 			oX('#terminal', true).on('mousedown, mouseup', self.checkFocus);
 			// oX('#command input', true).on('change, keydown, paste, input', self.listener);
 			oX('#terminal_input', true).on('change, keydown, paste, input', self.listener);
@@ -93,7 +93,7 @@
 
 		execute: function(command) {
 			echo({
-				url: self.terminal,
+				url: self.controller,
 				data: {
 					command: command
 				},
@@ -148,7 +148,7 @@
 
 
 	document.addEventListener('DOMContentLoaded', function() {
-		terminal.init();
+		Terminal.init();
 	});
 
 })(this);

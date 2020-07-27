@@ -51,11 +51,8 @@ class Terminal {
 	// Primary call
 	//////////////////////////////////////////////////////////////////////////80
 	public function process($str) {
-		debug($str);
 		$cmd = $this->parseCommand($str);
-		debug($cmd);
 		$output = Common::execute($cmd);
-		debug($output);
 		return $output;
 	}
 
