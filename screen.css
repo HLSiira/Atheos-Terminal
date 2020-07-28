@@ -12,9 +12,9 @@
 	position: relative;
 	width: 100%;
 	font-family: 'Ubuntu-Fira', monospace;
-	background-color: #1C1C1E;
-	background-image: radial-gradient(#0074D927, black 200%);
-	text-shadow: 0 0 2px #585858;
+	background-color: var(--ebony);
+	background-image: radial-gradient(var(--navy), var(--vanta) 150%);
+	text-shadow: 0 0 2px var(--coal);
 	line-height: 1.3em;
 	overflow: hidden;
 }
@@ -26,7 +26,7 @@
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px);
+	background: repeating-linear-gradient(0deg, rgba(0, 30, 0, 0.2), transparent 3px);
 	pointer-events: none;
 }
 
@@ -49,7 +49,7 @@
 }
 
 #terminal::selection {
-	background: #0074D9;
+	background: var(--blue);
 	text-shadow: none;
 }
 
@@ -64,11 +64,11 @@
 }
 
 #terminal .user {
-	color: #46A609;
+	color: var(--green);
 }
 
 #terminal .path {
-	color: #0074D9;
+	color: var(--blue);
 }
 
 #terminal #output .data {
