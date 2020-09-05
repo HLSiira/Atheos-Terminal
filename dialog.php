@@ -10,8 +10,8 @@
 // Source: https://github.com/Fluidbyte/Codiad-Terminal
 //////////////////////////////////////////////////////////////////////////////80
 
-$path = Common::data("path");
-$user = Common::data("user", "session");
+$path = POST("path");
+$activeUser = SESSION("user");
 
 switch ($action) {
 
@@ -25,7 +25,7 @@ switch ($action) {
 			<div class="container">
 				<div id="output"></div>
 				<div id="command">
-					<span id="prompt"><?php echo("<span class=\"user\">$user</span>:<span class=\"path\">$path</span>$")  ?></span>
+					<span id="prompt"><?php echo("<span class=\"user\">$activeUser</span>:<span class=\"path\">$path</span>$")  ?></span>
 					<span id="terminal_input" contenteditable="true"></span>
 				</div>
 			</div>

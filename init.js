@@ -54,8 +54,7 @@
 				self.command.focus();
 			};
 
-			// atheos.modal.load(800, this.path + 'dialog.php');
-			atheos.modal.load(800, atheos.dialog, {
+			atheos.modal.load(800, {
 				target: 'Terminal',
 				action: 'open',
 				path: self.activeDir,

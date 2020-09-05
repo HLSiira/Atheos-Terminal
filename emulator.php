@@ -16,8 +16,8 @@ require_once('../../common.php');
 //////////////////////////////////////////////////////////////////////////////80
 Common::checkSession();
 
-$path = Common::data("project", "session");
-$user = Common::data("user", "session");
+$path = SESSION("project");
+$user = SESSION("user");
 
 ?>
 <!doctype html>

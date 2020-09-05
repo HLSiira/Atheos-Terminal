@@ -19,7 +19,7 @@ Common::checkSession();
 //////////////////////////////////////////////////////////////////////////////80
 // Globals
 //////////////////////////////////////////////////////////////////////////////80
-$project = Common::data("project", "session");
+$project = SESSION("project");
 
 define('PASSWORD', 'terminal');
 define('ROOT', Common::getWorkspacePath($project));
@@ -104,8 +104,8 @@ class Terminal {
 // Processing
 //////////////////////////////////////////////////////////////////////////////80
 
-$user = Common::data("user", "session");
-$command = Common::data('command');
+$activeUser = SESSION("user");
+$command = POST('command');
 
 if (strtolower($command === 'exit')) {
 	$_SESSION['term_auth'] = false;
@@ -131,7 +131,7 @@ if (strtolower($command === 'exit')) {
 $output = array(
 	"data" => htmlentities($output),
 	"dir" => htmlentities(exec('pwd')),
-	"prompt" => "<span class=\"user\">$user</span>:<span class=\"path\">" . exec('pwd') . "</span>$ "
+	"prompt" => "<span class=\"user\">$activeUser</span>:<span class=\"path\">" . exec('pwd') . "</span>$ "
 );
 
 Common::sendJSON("success", $output);
