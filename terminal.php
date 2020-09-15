@@ -9,7 +9,7 @@
 // Copyright (c) 2013 Codiad & Kent Safranski
 // Source: https://github.com/Fluidbyte/Codiad-Terminal
 //////////////////////////////////////////////////////////////////////////////80
-require_once('../../common.php');
+require_once("../../common.php");
 
 //////////////////////////////////////////////////////////////////////////////80
 // Verify Session or Key
@@ -21,9 +21,9 @@ Common::checkSession();
 //////////////////////////////////////////////////////////////////////////////80
 $project = SESSION("project");
 
-define('PASSWORD', 'terminal');
-define('ROOT', Common::getWorkspacePath($project));
-define('BLOCKED', 'ssh,telnet');
+define("PASSWORD", "terminal");
+define("ROOT", Common::getWorkspacePath($project));
+define("BLOCKED", "ssh,telnet");
 
 //////////////////////////////////////////////////////////////////////////////80
 // Terminal Class
@@ -35,15 +35,15 @@ class Terminal {
 	// Constructor
 	//////////////////////////////////////////////////////////////////////////80
 	public function __construct() {
-		if (!isset($_SESSION['activeDir']) || !isset($_SESSION['activeDir'][$_SESSION['project']]) || empty($_SESSION['activeDir'][$_SESSION['project']])) {
-			if (ROOT === '') {
-				$output = Common::execute('pwd');
-				$_SESSION['activeDir'] = array([$_SESSION['project']] => $output);
+		if (!isset($_SESSION["activeDir"]) || !isset($_SESSION["activeDir"][$_SESSION["project"]]) || empty($_SESSION["activeDir"][$_SESSION["project"]])) {
+			if (ROOT === "") {
+				$output = Common::execute("pwd");
+				$_SESSION["activeDir"] = array([$_SESSION["project"]] => $output);
 			} else {
 				$this->changeDir(ROOT);
 			}
 		} else {
-			$this->changeDir($_SESSION['activeDir'][$_SESSION['project']]);
+			$this->changeDir($_SESSION["activeDir"][$_SESSION["project"]]);
 		}
 	}
 
@@ -64,9 +64,9 @@ class Terminal {
 		// Explode command
 		$command_parts = explode(" ", $str);
 
-		// Handle 'cd' command
-		if (in_array('cd', $command_parts)) {
-			$cd_key = array_search('cd', $command_parts);
+		// Handle "cd" command
+		if (in_array("cd", $command_parts)) {
+			$cd_key = array_search("cd", $command_parts);
 			$cd_key++;
 			
 			$dir = $command_parts[$cd_key];
@@ -77,13 +77,13 @@ class Terminal {
 		}
 
 		// Replace text editors with cat
-		$editors = array('vim', 'vi', 'nano');
-		$str = preg_replace('/^('.join('|', $editors).')/', 'cat', trim($str));
+		$editors = array("vim", "vi", "nano");
+		$str = preg_replace("/^(".join("|", $editors).")/", "cat", trim($str));
 
 		// Handle blocked commands
-		$blocked = explode(',', BLOCKED);
+		$blocked = explode(",", BLOCKED);
 		if (in_array($command_parts[0], $blocked)) {
-			$str = 'echo ERROR: Command not allowed';
+			$str = "echo ERROR: Command not allowed";
 		}
 
 		// Update exec command
@@ -96,7 +96,7 @@ class Terminal {
 	public function changeDir($dir) {
 		chdir($dir);
 		// Store new directory
-		$_SESSION['activeDir'][$_SESSION['project']] = exec('pwd');
+		$_SESSION["activeDir"][$_SESSION["project"]] = exec("pwd");
 	}
 }
 
@@ -105,23 +105,23 @@ class Terminal {
 //////////////////////////////////////////////////////////////////////////////80
 
 $activeUser = SESSION("user");
-$command = POST('command');
+$command = POST("command");
 
-if (strtolower($command === 'exit')) {
-	$_SESSION['term_auth'] = false;
-	$output = '[EXIT]';
+if (strtolower($command === "exit")) {
+	$_SESSION["term_auth"] = false;
+	$output = "[EXIT]";
 
-} else if (!isset($_SESSION['term_auth']) || $_SESSION['term_auth'] !== true) {
+} else if (!isset($_SESSION["term_auth"]) || $_SESSION["term_auth"] !== true) {
 	if ($command === PASSWORD) {
-		$_SESSION['term_auth'] = true;
-		$output = '[AUTHENTICATED]';
+		$_SESSION["term_auth"] = true;
+		$output = "[AUTHENTICATED]";
 	} else {
-		$output = 'Enter Password:';
+		$output = "Enter Password:";
 	}
 
 } else {
 	$Terminal = new Terminal();
-	$output = '';
+	$output = "";
 	$command = explode("&&", $command);
 	foreach ($command as $c) {
 		$output .= $Terminal->process($c);
@@ -130,10 +130,10 @@ if (strtolower($command === 'exit')) {
 
 $output = array(
 	"data" => htmlentities($output),
-	"dir" => htmlentities(exec('pwd')),
-	"prompt" => "<span class=\"user\">$activeUser</span>:<span class=\"path\">" . exec('pwd') . "</span>$ "
+	"dir" => htmlentities(exec("pwd")),
+	"prompt" => "<span class=\"user\">$activeUser</span>:<span class=\"path\">" . exec("pwd") . "</span>$ "
 );
 
-Common::sendJSON("success", $output);
+Common::send("success", $output);
 
 ?>
