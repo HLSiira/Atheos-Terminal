@@ -12,9 +12,9 @@
 (function(global) {
 
 	var atheos = global.atheos,
-		amplify = global.amplify;
+		carbon = global.carbon;
 
-	amplify.subscribe('system.loadExtra', () => atheos.Terminal.init());
+	carbon.subscribe('system.loadExtra', () => atheos.Terminal.init());
 
 	var self = null;
 
