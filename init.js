@@ -2,7 +2,7 @@
 // Atheos Terminal
 //////////////////////////////////////////////////////////////////////////////80
 // Copyright (c) 2020 Liam Siira (liam@siira.io), distributed as-is and without
-// warranty under the MIT License. See [root]/license.md for more.
+// warranty under the MIT License. See [root]/docs/LICENSE.md for more.
 // This information must remain intact.
 //////////////////////////////////////////////////////////////////////////////80
 // Copyright (c) 2013 Codiad & Kent Safranski
@@ -10,15 +10,9 @@
 //////////////////////////////////////////////////////////////////////////////80
 
 (function(global) {
+	'use strict';
 
-	var atheos = global.atheos,
-		carbon = global.carbon;
-
-	carbon.subscribe('system.loadExtra', () => atheos.Terminal.init());
-
-	var self = null;
-
-	atheos.Terminal = {
+	const self = {
 
 		path: atheos.path + 'plugins/Terminal/',
 		activeDir: null,
@@ -36,11 +30,10 @@
 		history_counter: -1,
 
 		init: function() {
-			self = this;
 			self.controller = self.path + 'terminal.php';
-			oX('#terminal', true).on('mousedown, mouseup', self.checkFocus);
+			fX('#terminal').on('mousedown, mouseup', self.checkFocus);
 			// oX('#command input', true).on('change, keydown, paste, input', self.listener);
-			oX('#terminal_input', true).on('change, keydown, paste, input', self.listener);
+			fX('#terminal_input').on('change, keydown, paste, input', self.listener);
 		},
 
 		open: function() {
@@ -153,7 +146,7 @@
 
 		display: function(command, data) {
 			self.output.append('<div class="command">' + self.prompt.html() + command + '</div><pre class="data">' + data + '</pre>');
-			var element = oX('#terminal .container').el;
+			var element = oX('#terminal .container').element;
 			element.scrollTop = element.scrollHeight - element.clientHeight;
 		},
 
@@ -163,4 +156,8 @@
 		}
 
 	};
-})(this);
+
+	carbon.subscribe('system.loadExtra', () => self.init());
+	atheos.Terminal = self;
+
+})();
