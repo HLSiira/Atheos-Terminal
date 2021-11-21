@@ -24,6 +24,8 @@ $project = SESSION("project");
 define("PASSWORD", "terminal");
 define("ROOT", Common::getWorkspacePath($project));
 define("BLOCKED", "ssh,telnet");
+// define("ENABLED", "java,ls,cd,echo,javac");
+define("ENABLED", false);
 
 //////////////////////////////////////////////////////////////////////////////80
 // Terminal Class
@@ -52,6 +54,7 @@ class Terminal {
 	//////////////////////////////////////////////////////////////////////////80
 	public function process($str) {
 		$cmd = $this->parseCommand($str);
+		if ($cmd === "") return;
 		$output = Common::execute($cmd);
 		return $output;
 	}
@@ -68,9 +71,9 @@ class Terminal {
 		if (in_array("cd", $command_parts)) {
 			$cd_key = array_search("cd", $command_parts);
 			$cd_key++;
-			
+
 			$dir = $command_parts[$cd_key];
-			
+
 			$this->changeDir($dir);
 			// Remove from command
 			$str = str_replace("cd $dir", "", $str);
@@ -80,11 +83,22 @@ class Terminal {
 		$editors = array("vim", "vi", "nano");
 		$str = preg_replace("/^(".join("|", $editors).")/", "cat", trim($str));
 
-		// Handle blocked commands
-		$blocked = explode(",", BLOCKED);
-		if (in_array($command_parts[0], $blocked)) {
-			$str = "echo ERROR: Command not allowed";
+
+		if (ENABLED) {
+			// Handle enabled commands
+			$enabled = explode(",", ENABLED);
+			if (in_array($command_parts[0], $enabled) === false) {
+				$str = "echo ERROR: Command not allowed";
+			}
+		} else {
+			// Handle blocked commands
+			$blocked = explode(",", BLOCKED === true);
+			if (in_array($command_parts[0], $blocked)) {
+				$str = "echo ERROR: Command not allowed";
+			}
 		}
+
+
 
 		// Update exec command
 		return $str . " 2>&1";
@@ -122,7 +136,8 @@ if (strtolower($command === "exit")) {
 } else {
 	$Terminal = new Terminal();
 	$output = "";
-	$command = explode("&&", $command);
+	$command = explode(" && ", $command);
+	debug($command);
 	foreach ($command as $c) {
 		$output .= $Terminal->process($c);
 	}

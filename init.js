@@ -30,6 +30,7 @@
 		history_counter: -1,
 
 		init: function() {
+			self.path = self.path.replace('index.php','');
 			self.controller = self.path + 'terminal.php';
 			fX('#terminal').on('mousedown, mouseup', self.checkFocus);
 			// oX('#command input', true).on('change, keydown, paste, input', self.listener);
@@ -77,13 +78,14 @@
 			switch (code) {
 				// Enter key, process command
 				case 13:
+					e.preventDefault();
 					if (command == 'clear') {
 						self.clear();
 					} else {
 						self.command_history[++self.command_counter] = command;
 						self.history_counter = self.command_counter;
 						self.execute(command);
-						self.command.text('Processing...');
+						self.command.text(command + '...processing...');
 						self.command.focus();
 					}
 					break;
