@@ -5,7 +5,7 @@
 	"category": "Development",
 	"status": "available",
 	"url": "https://github.com/HLSiira/Atheos-Terminal",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"rightbar": [{
 		"action": "atheos.Terminal.open();",
 		"icon": "fas fa-terminal",

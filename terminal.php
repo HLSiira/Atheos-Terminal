@@ -40,7 +40,7 @@ class Terminal {
 		if (!isset($_SESSION["activeDir"]) || !isset($_SESSION["activeDir"][$_SESSION["project"]]) || empty($_SESSION["activeDir"][$_SESSION["project"]])) {
 			if (ROOT === "") {
 				$output = Common::execute("pwd");
-				$_SESSION["activeDir"] = array([$_SESSION["project"]] => $output);
+				$_SESSION["activeDir"] = array([$_SESSION["project"]] => $output["text"]);
 			} else {
 				$this->changeDir(ROOT);
 			}
@@ -56,7 +56,7 @@ class Terminal {
 		$cmd = $this->parseCommand($str);
 		if ($cmd === "") return;
 		$output = Common::execute($cmd);
-		return $output;
+		return $output["text"];
 	}
 
 	//////////////////////////////////////////////////////////////////////////80
@@ -140,6 +140,7 @@ if (strtolower($command === "exit")) {
 	debug($command);
 	foreach ($command as $c) {
 		$output .= $Terminal->process($c);
+		// $output .= implode("\n",$Terminal->process($c));
 	}
 }
 
