@@ -14,7 +14,7 @@
 
 	const self = {
 
-		path: atheos.path + 'plugins/Terminal/',
+		path: atheos.baseUrl + 'plugins/Terminal/',
 		activeDir: null,
 		controller: null,
 
@@ -38,7 +38,7 @@
 		},
 
 		open: function() {
-			self.activeDir = self.activeDir || atheos.project.current.path;
+			self.activeDir = self.activeDir || atheos.current.projectPath;
 			var callback = function() {
 				// self.command = oX('#command input');
 				self.command = oX('#terminal_input');
